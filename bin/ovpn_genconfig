@@ -103,6 +103,7 @@ usage() {
     echo " -N    Configure NAT to access external server network"
     echo " -t    Use TAP device (instead of TUN device)"
     echo " -T    Encrypt packets with the given cipher algorithm instead of the default one (tls-cipher)."
+    echo " -x    Allow NCP Cipher negotiation (prevent ncp-disable)."
     echo " -y    Use tls-auth instead of tls-crypt."
     echo " -z    Enable comp-lzo compression."
 }
@@ -143,8 +144,8 @@ if [ -z "${EASYRSA_PKI:-}" ]; then
     export EASYRSA_PKI="$OPENVPN/pki"
 fi
 
-OVPN_AUTH=''
-OVPN_CIPHER=''
+OVPN_AUTH='SHA512'
+OVPN_CIPHER='AES-256-GCM'
 OVPN_CLIENT_TO_CLIENT=''
 OVPN_CN=''
 OVPN_COMP_LZO=0
@@ -161,20 +162,22 @@ OVPN_FRAGMENT=''
 OVPN_KEEPALIVE="10 60"
 OVPN_MTU=''
 OVPN_NAT=0
+OVPN_NCP_DISABLE=1
 OVPN_PORT=''
 OVPN_PROTO=''
 OVPN_PUSH=()
 OVPN_ROUTES=()
 OVPN_SERVER=192.168.255.0/24
 OVPN_SERVER_URL=''
-OVPN_TLS_CIPHER=''
+OVPN_TLS_CIPHER='TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384:TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-GCM-SHA384'
 OVPN_TLS_CRYPT='tls-crypt'
+OVPN_TLS_MIN='1.2'
 
 # Import existing configuration if present
 [ -r "$OVPN_ENV" ] && source "$OVPN_ENV"
 
 # Parse arguments
-while getopts ":a:e:E:C:T:r:s:du:bcp:n:k:DNm:f:tz2:y" opt; do
+while getopts ":a:e:E:C:T:r:s:du:bcp:n:k:DNm:f:tz2:x:y" opt; do
     case $opt in
         a)
             OVPN_AUTH="$OPTARG"
@@ -243,11 +246,14 @@ while getopts ":a:e:E:C:T:r:s:du:bcp:n:k:DNm:f:tz2:y" opt; do
         m)
             OVPN_MTU="$OPTARG"
             ;;
-        y)
-            OVPN_TLS_CRYPT="tls-auth"
-            ;;
         t)
             OVPN_DEVICE="tap"
+            ;;
+        x)
+            OVPN_NCP_DISABLE=0
+            ;;
+        y)
+            OVPN_TLS_CRYPT="tls-auth"
             ;;
         z)
             OVPN_COMP_LZO=1
@@ -343,6 +349,8 @@ status /tmp/openvpn-status.log
 
 user nobody
 group nogroup
+
+tls-version-min $OVPN_TLS_MIN
 EOF
 
 if [ "${OVPN_DISABLE_PUSH_BLOCK_DNS}" == "1" ]; then
@@ -354,6 +362,8 @@ fi
 [ -n "$OVPN_TLS_CIPHER" ] && echo "tls-cipher $OVPN_TLS_CIPHER" >> "$conf"
 [ -n "$OVPN_CIPHER" ] && echo "cipher $OVPN_CIPHER" >> "$conf"
 [ -n "$OVPN_AUTH" ] && echo "auth $OVPN_AUTH" >> "$conf"
+
+[ "$OVPN_NCP_DISABLE" == "1" ] && echo "ncp-disable" >> "$conf"
 
 [ -n "${OVPN_CLIENT_TO_CLIENT:-}" ] && echo "client-to-client" >> "$conf"
 [ "$OVPN_COMP_LZO" == "1" ] && echo "comp-lzo" >> "$conf"
