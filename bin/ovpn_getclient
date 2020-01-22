@@ -59,17 +59,22 @@ $(openssl x509 -in $EASYRSA_PKI/issued/${cn}.crt)
 $(cat $EASYRSA_PKI/ca.crt)
 </ca>
 key-direction 1
-<tls-auth>
+<$OVPN_TLS_CRYPT>
 $(cat $EASYRSA_PKI/ta.key)
-</tls-auth>
+</$OVPN_TLS_CRYPT>
 "
     elif [ "$mode" == "separated" ]; then
         echo "
 key ${cn}.key
 ca ca.crt
 cert ${cn}.crt
-tls-auth ta.key 1
 "
+    fi
+
+    if [ "$OVPN_TLS_CRYPT" != "tls-crypt" ];then
+        echo "$OVPN_TLS_CRYPT ta.key 1"
+    else
+        echo "$OVPN_TLS_CRYPT ta.key"
     fi
 
     if [ "$OVPN_DEFROUTE" != "0" ];then
