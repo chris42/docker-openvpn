@@ -21,8 +21,8 @@ Fork of Kyla Manna's OpenVPN server in a Docker container complete with an EasyR
   private key used by the newly generated certificate authority.
 
       docker volume create --name $OVPN_DATA
-      docker run -v $OVPN_DATA:/etc/openvpn --log-driver=none --rm chris42/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
-      docker run -v $OVPN_DATA:/etc/openvpn --log-driver=none --rm -it chris42/openvpn ovpn_initpki
+      docker run -v $OVPN_DATA:/etc/openvpn --rm chris42/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
+      docker run -v $OVPN_DATA:/etc/openvpn --rm -it chris42/openvpn ovpn_initpki
 
 * Start OpenVPN server process
 
@@ -30,11 +30,11 @@ Fork of Kyla Manna's OpenVPN server in a Docker container complete with an EasyR
 
 * Generate a client certificate without a passphrase
 
-      docker run -v $OVPN_DATA:/etc/openvpn --log-driver=none --rm -it chris42/openvpn easyrsa build-client-full CLIENTNAME nopass
+      docker run -v $OVPN_DATA:/etc/openvpn --rm -it chris42/openvpn easyrsa build-client-full CLIENTNAME nopass
 
 * Retrieve the client configuration with embedded certificates
 
-      docker run -v $OVPN_DATA:/etc/openvpn --log-driver=none --rm chris42/openvpn ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
+      docker run -v $OVPN_DATA:/etc/openvpn --rm chris42/openvpn ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
 
 ## Next Steps
 
