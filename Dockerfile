@@ -32,8 +32,7 @@ RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin
 ENV OPENVPN=/etc/openvpn
 ENV EASYRSA=/usr/share/easy-rsa \
     EASYRSA_CRL_DAYS=3650 \
-    EASYRSA_PKI=$OPENVPN/pki \
-    EASYRSA_VARS_FILE=$OPENVPN/vars
+    EASYRSA_PKI=$OPENVPN/pki
 
 VOLUME ["/etc/openvpn"]
 
