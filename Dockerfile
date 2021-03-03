@@ -19,7 +19,8 @@ RUN apt-get install -y \
     iptables \
     libpam-google-authenticator \
     openvpn \
-    pamtester
+    pamtester \
+    qrencode
 
 RUN rm -rf /var/lib/apt/lists/*
 
