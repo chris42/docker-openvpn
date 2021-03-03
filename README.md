@@ -2,6 +2,8 @@
 
 Fork of Kyla Manna's OpenVPN server in a Docker container complete with an EasyRSA PKI CA.
 
+ATTENTION: This is a WIP for personal use.
+
 #### Upstream Links
 
 * Docker Registry @ [kylemanna/openvpn](https://hub.docker.com/r/kylemanna/openvpn/)
